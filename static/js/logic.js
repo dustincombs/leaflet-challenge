@@ -58,6 +58,9 @@ function makeMap(features){
 
   // find the maximum magnitude to adjust the color scale
   var maxMag = Math.max.apply(Math, features.map(function(o) { return o.properties.mag; }))
+  // console.log(maxMag)
+  // console.log(Math.ceil(maxMag))
+  var scale = Math.ceil(maxMag)
 
   // create earthquake markers
   var quakes = L.geoJSON(features, {
@@ -66,9 +69,10 @@ function makeMap(features){
       return L.circleMarker(latlng, {
         radius:feature.properties.mag*5,
         // fillColor:d3.interpolateInferno(feature.properties.mag/6),
-        fillColor:d3.interpolateCool(feature.properties.mag/6),
+        fillColor:d3.interpolateCool(feature.properties.mag/scale),
         weight:1,
-        color:"white"
+        color:"white",
+        fillOpacity:0.7
       });
     }
   })
@@ -85,6 +89,28 @@ function makeMap(features){
     zoom: 4,
     layers: [darkmap, quakes]
   });
+
+  // create legend
+  var legend = L.control({ position: "bottomleft" });
+  legend.onAdd = function() {
+    var div = L.DomUtil.create("div", "info legend");
+    var labels = [];
+
+    // add title
+    div.innerHTML =  "<h3>Magnitude</h3>";
+
+    // loop over magnitudes up to maximum value
+    for (var i = 1; i <= scale; i++) {
+      labels.push('<i style="background-color: ' + d3.interpolateCool(i/scale) + '"></i>' +
+       "<b>" + i + "</b><br>");
+    };
+
+    div.innerHTML += labels.join("");
+    return div;
+  };
+
+  // add legend to the map
+  legend.addTo(myMap);
 
 
   // wait for promise with plate boundary data
