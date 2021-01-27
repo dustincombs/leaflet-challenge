@@ -14,7 +14,6 @@ const faultPromise = getFaultlines()
 d3.json(urlQuakes).then(function(data) {
   // send the features to the makeMap function
   makeMap(data.features);
-  // console.log(data.features)
 });
 
 
@@ -24,6 +23,7 @@ function makeMap(features){
 
   // define function to run on each feature
   function onEachFeature(feature, layer) {
+    // check for magnitude
     if(feature.properties.mag){
       mag = feature.properties.mag.toPrecision(2)
     }
@@ -58,8 +58,7 @@ function makeMap(features){
 
   // find the maximum magnitude to adjust the color scale
   var maxMag = Math.max.apply(Math, features.map(function(o) { return o.properties.mag; }))
-  // console.log(maxMag)
-  // console.log(Math.ceil(maxMag))
+  // take the next highest integer as a scale value
   var scale = Math.ceil(maxMag)
 
   // create earthquake markers
@@ -68,7 +67,6 @@ function makeMap(features){
     pointToLayer: function (feature, latlng) {
       return L.circleMarker(latlng, {
         radius:feature.properties.mag*5,
-        // fillColor:d3.interpolateInferno(feature.properties.mag/6),
         fillColor:d3.interpolateCool(feature.properties.mag/scale),
         weight:1,
         color:"white",
@@ -83,7 +81,7 @@ function makeMap(features){
     Dark: darkmap
   };
 
-  // Create map object and set default layers
+  // create map object and set defaults
   var myMap = L.map("map", {
     center: [45.52, -122.67],
     zoom: 4,
