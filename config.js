@@ -1,1 +1,0 @@
-var token = "pk.eyJ1IjoiZGNjb21icyIsImEiOiJja2lydWVwbnkwYWg4MzVvMXJmaDhieGxrIn0.LRVQLFWbFhAjvhfCUBwjAA"
